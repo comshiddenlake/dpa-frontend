@@ -1,0 +1,36 @@
+<div class="container">
+    <div style="display: block">
+        <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
+            [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
+        </canvas>
+    </div>
+    <div>
+        <button mat-button mat-raised-button (click)="dailyData(this.energias)" class="btn btn-primary"
+            style="margin-right:30px; margin-top: 30px;">Diario</button>
+        <button mat-button mat-raised-button (click)="monthlyData(this.energias)" class="btn btn-primary"
+            style="margin-right:30px; margin-top: 30px;">Mensual</button>
+        <button mat-button mat-raised-button (click)="randomize()" class="btn btn-primary"
+            style="margin-right:30px; margin-top: 30px;">Anual</button>
+        <button type="submit" class="btn btn-success" (click)="downloadFile()" data-toggle="tooltip"
+            data-placement="left" title="Se descargará un archivo .CSV con el contenido de la tabla"
+            style="position: absolute; right:30px; margin-top: 30px;">Descargar</button>
+    </div>
+    <hr>
+    <div>
+        <h2>Tabla de valores</h2>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <tr>
+                    <th *ngFor="let column of headers">
+                        {{column | uppercase}}
+                    </th>
+                </tr>
+                <tr *ngFor="let row of energias">
+                    <td *ngFor="let column of headers">
+                        {{row[column]}}
+                    </td>
+                </tr>
+            </table>
+        </div>
+    </div>
+</div>

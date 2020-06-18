@@ -1,0 +1,15 @@
+<div class="container">
+    <h2>Inicio de sesión</h2>
+    <div class="form-group">
+        <input [(ngModel)]="user" placeholder="Usuario" style="margin-right:30px;">
+    </div>
+    <div class="form-group">
+        <input [(ngModel)]="password" type="password" style="margin-right:30px; margin-bottom: 30px;"
+            placeholder="Contraseña">
+    </div>
+    <div class="btn-group">
+        <button type="submit" class="btn-sm btn-success" style="margin-right: 30px;" (click)="loginUp()">Ingresar</button>
+    
+        <button type="reset" class="btn-sm btn-danger" (click)="cleanCredentials()">Limpiar</button>
+    </div>
+</div>
