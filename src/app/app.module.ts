@@ -14,6 +14,8 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 
 import { NgxSpinnerModule } from "ngx-spinner";
 
+import {  NgbModule} from '@ng-bootstrap/ng-bootstrap';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -27,7 +29,8 @@ import { NgxSpinnerModule } from "ngx-spinner";
     ChartsModule,
     FormsModule,
     NgxSpinnerModule,
-    BrowserAnimationsModule
+    BrowserAnimationsModule,
+    NgbModule
   ],
   providers: [],
   bootstrap: [AppComponent]

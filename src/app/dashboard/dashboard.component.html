@@ -1,20 +1,80 @@
 <div class="container">
+    <!-- Default checked -->
+    <div class="custom-control custom-switch">
+        <input type="checkbox" class="custom-control-input" (change)="switchMegaToKilo()" id="customSwitch1" checked>
+        <label class="custom-control-label" for="customSwitch1">MegaWatt</label>
+    </div>
     <div style="display: block">
         <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
             [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
         </canvas>
     </div>
+    <hr>
     <div>
         <button mat-button mat-raised-button (click)="dailyData(this.energias)" class="btn btn-primary"
-            style="margin-right:30px; margin-top: 30px;">Diario</button>
+            style="margin-right:30px; margin-top: 30px; margin-bottom: 30px;">Diario</button>
         <button mat-button mat-raised-button (click)="monthlyData(this.energias)" class="btn btn-primary"
-            style="margin-right:30px; margin-top: 30px;">Mensual</button>
+            style="margin-right:30px; margin-top: 30px; margin-bottom: 30px;">Mensual</button>
         <button mat-button mat-raised-button (click)="randomize()" class="btn btn-primary"
-            style="margin-right:30px; margin-top: 30px;">Anual</button>
+            style="margin-right:30px; margin-top: 30px; margin-bottom: 30px;">Anual</button>
         <button type="submit" class="btn btn-success" (click)="downloadFile()" data-toggle="tooltip"
             data-placement="left" title="Se descargará un archivo .CSV con el contenido de la tabla"
             style="position: absolute; right:30px; margin-top: 30px;">Descargar</button>
+
     </div>
+    <!-- Calendario -->
+    <div>
+
+        <form class="form-inline">
+            <div class="form-group hidden">
+                <div class="input-group">
+                    <input name="datepicker" class="form-control" ngbDatepicker #datepicker="ngbDatepicker"
+                        [autoClose]="'outside'" (dateSelect)="onDateSelection($event)" [displayMonths]="2"
+                        [dayTemplate]="t" outsideDays="hidden" [startDate]="fromDate!">
+                    <ng-template #t let-date let-focused="focused">
+                        <span class="custom-day" [class.focused]="focused" [class.range]="isRange(date)"
+                            [class.faded]="isHovered(date) || isInside(date)" (mouseenter)="hoveredDate = date"
+                            (mouseleave)="hoveredDate = null">
+                            {{ date.day }}
+                        </span>
+                    </ng-template>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="input-group">
+                    <input #dpFromDate class="form-control" placeholder="yyyy-mm-dd" name="dpFromDate"
+                        [value]="formatter.format(fromDate)"
+                        (input)="fromDate = validateInput(fromDate, dpFromDate.value)">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle()"
+                            type="button"><svg class="bi bi-calendar-check-fill" width="1em" height="1em"
+                                viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM0 5h16v9a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5zm10.854 3.854a.5.5 0 0 0-.708-.708L7.5 10.793 6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z" />
+                            </svg></button>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group ml-2">
+                <div class="input-group">
+                    <input #dpToDate class="form-control" placeholder="yyyy-mm-dd" name="dpToDate"
+                        [value]="formatter.format(toDate)" (input)="toDate = validateInput(toDate, dpToDate.value)">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary calendar" (click)="datepicker.toggle()"
+                            type="button"><svg class="bi bi-calendar-check-fill" width="1em" height="1em"
+                                viewBox="0 0 16 16" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                                <path fill-rule="evenodd"
+                                    d="M4 .5a.5.5 0 0 0-1 0V1H2a2 2 0 0 0-2 2v1h16V3a2 2 0 0 0-2-2h-1V.5a.5.5 0 0 0-1 0V1H4V.5zM0 5h16v9a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V5zm10.854 3.854a.5.5 0 0 0-.708-.708L7.5 10.793 6.354 9.646a.5.5 0 1 0-.708.708l1.5 1.5a.5.5 0 0 0 .708 0l3-3z" />
+                            </svg></button>
+                    </div>
+                </div>
+            </div>
+            <button mat-button mat-raised-button (click)="rangeData(this.energias)" class="btn btn-primary"
+                style="margin-right:30px; margin-top: 30px; margin-bottom: 30px; margin-left: 30px;">Generar</button>
+        </form>
+
+    </div>
+    <!-- Calendario -->
     <hr>
     <div>
         <h2>Tabla de valores</h2>
@@ -25,7 +85,7 @@
                         {{column | uppercase}}
                     </th>
                 </tr>
-                <tr *ngFor="let row of energias">
+                <tr *ngFor="let row of energi">
                     <td *ngFor="let column of headers">
                         {{row[column]}}
                     </td>
