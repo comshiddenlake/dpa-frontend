@@ -133,10 +133,6 @@ export class DashboardComponent implements OnInit {
     console.log(event, active);
   }
 
-  public randomize(): void {
-    console.log("negativo")
-  }
-
   public dailyData(data) {
     this.spinner.show();
     this.barChartData[0].data = [];
@@ -186,7 +182,7 @@ export class DashboardComponent implements OnInit {
 
         this.barChartLabels.push(fechita);
 
-        this.energi.push({ "fecha": data[i]["fecha"].substring(0, 10), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
+        this.energi.push({ "fecha": data[i]["fecha"].substring(0, 7), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
         fechita = data[i]["fecha"].substring(0, 7);
         bankito = data[i]["banki"], francito = data[i]["francis"], peltoncito = data[i]["pelton"], acum = 1
       }
@@ -204,7 +200,7 @@ export class DashboardComponent implements OnInit {
     this.barChartData[2].data = [];
     this.barChartLabels = [];
 
-    let fechita = data[0]["fecha"].substring(0, 7), bankito = 0, francito = 0, peltoncito = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
+    let fechita = data[0]["fecha"].substring(0, 7);
     let toDateFormated = new Date(this.toDate.year + "-" + this.toDate.month + "-" + this.toDate.day)
     let fromDateFormated = new Date(this.fromDate.year + "-" + this.fromDate.month + "-" + this.fromDate.day)
 
@@ -223,9 +219,42 @@ export class DashboardComponent implements OnInit {
     this.spinner.hide();
   }
 
-  public annualData() {
+  public annualData(data) {
     this.spinner.show();
 
+    this.energi = []
+
+    this.barChartData[0].data = [];
+    this.barChartData[1].data = [];
+    this.barChartData[2].data = [];
+    this.barChartLabels = [];
+
+    let fechita = data[0]["fecha"].substring(0, 4), bankito = 0, francito = 0, peltoncito = 0, acum = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
+
+    for (let i = 0; i < data.length; i++) {
+      if (data[i]["fecha"].includes(fechita)) {
+        bankito += data[i]["banki"]
+        francito += data[i]["francis"]
+        peltoncito += data[i]["pelton"]
+        p1 += data[i]["P1"]
+        p2 += data[i]["P2"]
+        p3 += data[i]["P3"]
+        p4 += data[i]["P4"]
+        p5 += data[i]["P5"]
+        p6 += data[i]["P6"]
+      } else {
+
+        this.barChartData[0]['data'].push(francito);
+        this.barChartData[1]['data'].push(bankito);
+        this.barChartData[2]['data'].push(peltoncito);
+
+        this.barChartLabels.push(fechita);
+
+        this.energi.push({ "fecha": data[i]["fecha"].substring(0, 4), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
+        fechita = data[i]["fecha"].substring(0, 4);
+        bankito = data[i]["banki"], francito = data[i]["francis"], peltoncito = data[i]["pelton"], acum = 1
+      }
+    }
     this.spinner.hide();
   }
 
