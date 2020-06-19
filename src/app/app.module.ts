@@ -14,7 +14,9 @@ import { DashboardComponent } from './dashboard/dashboard.component';
 
 import { NgxSpinnerModule } from "ngx-spinner";
 
-import {  NgbModule} from '@ng-bootstrap/ng-bootstrap';
+import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
+
+import { LoggerModule, NgxLoggerLevel } from 'ngx-logger';
 
 @NgModule({
   declarations: [
@@ -30,7 +32,13 @@ import {  NgbModule} from '@ng-bootstrap/ng-bootstrap';
     FormsModule,
     NgxSpinnerModule,
     BrowserAnimationsModule,
-    NgbModule
+    NgbModule,
+    LoggerModule.forRoot({
+      serverLoggingUrl: 'localhost',
+      level: NgxLoggerLevel.TRACE,
+      serverLogLevel: NgxLoggerLevel.ERROR,
+      disableConsoleLogging: false
+    })
   ],
   providers: [],
   bootstrap: [AppComponent]

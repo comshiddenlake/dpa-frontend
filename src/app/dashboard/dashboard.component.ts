@@ -9,6 +9,7 @@ import { Router } from '@angular/router';
 import { NgxSpinnerService } from "ngx-spinner";
 
 import { NgbDate, NgbCalendar, NgbDateParserFormatter } from '@ng-bootstrap/ng-bootstrap';
+import { NGXLogger } from 'ngx-logger';
 
 @Component({
   selector: 'app-dashboard',
@@ -22,19 +23,17 @@ export class DashboardComponent implements OnInit {
     private router: Router,
     private spinner: NgxSpinnerService,
     private calendar: NgbCalendar,
-    public formatter: NgbDateParserFormatter) {
+    public formatter: NgbDateParserFormatter,
+    private logger: NGXLogger) {
     this.spinner.show();
     this.fromDate = calendar.getToday();
     this.toDate = calendar.getNext(calendar.getToday(), 'd', 10);
   }
 
   hoveredDate: NgbDate | null = null;
-
   fromDate: NgbDate | null;
   toDate: NgbDate | null;
-
   mega = true
-
 
   onDateSelection(date: NgbDate) {
     if (!this.fromDate && !this.toDate) {
@@ -71,8 +70,8 @@ export class DashboardComponent implements OnInit {
   async ngOnInit() {
     if (this.login.getLogStatus() == 0)
       this.router.navigate([''])
-
-    await this.http.getEnergias().subscribe((data) => this.setDataSet(data))
+    //this.logger.info("Dashboard from user: " + this.login.getUser())
+    this.http.getEnergias().subscribe((data) => this.setDataSet(data));
   }
 
   config = [];
@@ -273,6 +272,7 @@ export class DashboardComponent implements OnInit {
 
     a.href = url;
     a.download = data[0]["fecha"].substring(0, 10) + "-" + data[data.length - 1]["fecha"].substring(0, 10) + ".csv";
+
     a.click();
     window.URL.revokeObjectURL(url);
     a.remove();
