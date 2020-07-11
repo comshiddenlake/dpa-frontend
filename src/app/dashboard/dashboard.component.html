@@ -2,7 +2,8 @@
     <!-- Default checked -->
     <div class="custom-control custom-switch">
         <input type="checkbox" class="custom-control-input" (change)="switchMegaToKilo()" id="customSwitch1" checked>
-        <label class="custom-control-label" for="customSwitch1">MegaWatt</label>
+        <label class="custom-control-label" for="customSwitch1" *ngIf="!mega">MegaWatt</label>
+        <label class="custom-control-label" for="customSwitch1" *ngIf="mega">KiloWatt</label>
     </div>
     <div style="display: block">
         <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"

@@ -34,6 +34,15 @@ export class DashboardComponent implements OnInit {
   fromDate: NgbDate | null;
   toDate: NgbDate | null;
   mega = true
+  energias
+  energi = []
+  config = [];
+
+  async ngOnInit() {
+    if (this.login.getLogStatus() == 0)
+      this.router.navigate([''])
+    this.http.getEnergias().subscribe((data) => this.dailyData(data));
+  }
 
   onDateSelection(date: NgbDate) {
     if (!this.fromDate && !this.toDate) {
@@ -63,19 +72,6 @@ export class DashboardComponent implements OnInit {
     return parsed && this.calendar.isValid(NgbDate.from(parsed)) ? NgbDate.from(parsed) : currentValue;
   }
 
-  energias
-
-  energi = []
-
-  async ngOnInit() {
-    if (this.login.getLogStatus() == 0)
-      this.router.navigate([''])
-    //this.logger.info("Dashboard from user: " + this.login.getUser())
-    this.http.getEnergias().subscribe((data) => this.setDataSet(data));
-  }
-
-  config = [];
-
   public barChartOptions: ChartOptions = {
     responsive: true,
     // We use these empty structures as placeholders for dynamic theming.
@@ -103,27 +99,6 @@ export class DashboardComponent implements OnInit {
   }
   ];
 
-  setDataSet(data) {
-    let banki = [], francis = [], pelton = [], fechareverse = [], fecha = []
-    this.barChartLabels = [];
-    for (let i = 0; i < data.length; i++) {
-      fecha.push(data[i]["fecha"] = data[i]["fecha"].substring(0, 10));
-      francis.push(data[i]["francis"]);
-      banki.push(data[i]["banki"]);
-      pelton.push(data[i]["pelton"]);
-    }
-    this.barChartData[0]['data'] = francis.reverse();
-    this.barChartData[1]['data'] = banki.reverse();
-    this.barChartData[2]['data'] = pelton.reverse();
-    fechareverse = fecha.reverse()
-    for (let i = 0; i < 30; i++) {
-      this.barChartLabels.push(fechareverse[i]);
-    }
-
-    this.energias = this.energi = data.reverse();
-    this.spinner.hide();
-  }
-
   public chartClicked({ event, active }: { event: MouseEvent, active: {}[] }): void {
     console.log(event, active);
   }
@@ -134,36 +109,49 @@ export class DashboardComponent implements OnInit {
 
   public dailyData(data) {
     this.spinner.show();
-    this.barChartData[0].data = [];
-    this.barChartData[1].data = [];
-    this.barChartData[2].data = [];
+
+    this.energias = data;
+
+    this.mega = true;
+
+    this.cleanData(false);
     this.energi = []
 
     this.barChartLabels = [];
-    for (let i = 0; i < 30; i++) {
+    for (let i = 0; i < data.length; i++) {
       this.barChartLabels.push(data[i]["fecha"].substring(0, 10));
       this.energi.push({ "fecha": data[i]["fecha"].substring(0, 10), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
       this.barChartData[0]['data'].push(data[i]["francis"])
       this.barChartData[1]['data'].push(data[i]["banki"])
       this.barChartData[2]['data'].push(data[i]["pelton"])
     }
+
+    this.initializeData();
+
     this.spinner.hide();
   }
 
   public monthlyData(data) {
     this.spinner.show();
 
+    this.mega = true;
+
     this.energi = []
 
-    this.barChartData[0].data = [];
-    this.barChartData[1].data = [];
-    this.barChartData[2].data = [];
-    this.barChartLabels = [];
+    this.cleanData(true);
 
-    let fechita = data[0]["fecha"].substring(0, 7), bankito = 0, francito = 0, peltoncito = 0, acum = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
+    this.filterFromDate(data[0]["fecha"].substring(0, 7), data);
+
+    this.initializeData();
+
+    this.spinner.hide();
+  }
+
+  filterFromDate(fecha, data) {
+    let bankito = 0, francito = 0, peltoncito = 0, acum = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
 
     for (let i = 0; i < data.length; i++) {
-      if (data[i]["fecha"].includes(fechita)) {
+      if (data[i]["fecha"].includes(fecha)) {
         bankito += data[i]["banki"]
         francito += data[i]["francis"]
         peltoncito += data[i]["pelton"]
@@ -174,30 +162,28 @@ export class DashboardComponent implements OnInit {
         p5 += data[i]["P5"]
         p6 += data[i]["P6"]
       } else {
+        this.energi.push({ "fecha": data[i]["fecha"].substring(0, fecha.length), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
+        fecha = data[i]["fecha"].substring(0, fecha.length);
 
         this.barChartData[0]['data'].push(francito);
         this.barChartData[1]['data'].push(bankito);
         this.barChartData[2]['data'].push(peltoncito);
 
-        this.barChartLabels.push(fechita);
+        this.barChartLabels.push(fecha);
 
-        this.energi.push({ "fecha": data[i]["fecha"].substring(0, 7), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
-        fechita = data[i]["fecha"].substring(0, 7);
         bankito = data[i]["banki"], francito = data[i]["francis"], peltoncito = data[i]["pelton"], acum = 1
       }
     }
-    this.spinner.hide();
   }
 
   public rangeData(data) {
     this.spinner.show();
 
+    this.mega = true;
+
     this.energi = []
 
-    this.barChartData[0].data = [];
-    this.barChartData[1].data = [];
-    this.barChartData[2].data = [];
-    this.barChartLabels = [];
+    this.cleanData(true);
 
     let fechita = data[0]["fecha"].substring(0, 7);
     let toDateFormated = new Date(this.toDate.year + "-" + this.toDate.month + "-" + this.toDate.day)
@@ -215,45 +201,22 @@ export class DashboardComponent implements OnInit {
     }
     this.barChartLabels.push(fechita);
 
+    this.initializeData();
+
     this.spinner.hide();
   }
 
   public annualData(data) {
     this.spinner.show();
 
+    this.mega = true;
+
     this.energi = []
 
-    this.barChartData[0].data = [];
-    this.barChartData[1].data = [];
-    this.barChartData[2].data = [];
-    this.barChartLabels = [];
+    this.cleanData(true);
 
-    let fechita = data[0]["fecha"].substring(0, 4), bankito = 0, francito = 0, peltoncito = 0, acum = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
-
-    for (let i = 0; i < data.length; i++) {
-      if (data[i]["fecha"].includes(fechita)) {
-        bankito += data[i]["banki"]
-        francito += data[i]["francis"]
-        peltoncito += data[i]["pelton"]
-        p1 += data[i]["P1"]
-        p2 += data[i]["P2"]
-        p3 += data[i]["P3"]
-        p4 += data[i]["P4"]
-        p5 += data[i]["P5"]
-        p6 += data[i]["P6"]
-      } else {
-
-        this.barChartData[0]['data'].push(francito);
-        this.barChartData[1]['data'].push(bankito);
-        this.barChartData[2]['data'].push(peltoncito);
-
-        this.barChartLabels.push(fechita);
-
-        this.energi.push({ "fecha": data[i]["fecha"].substring(0, 4), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
-        fechita = data[i]["fecha"].substring(0, 4);
-        bankito = data[i]["banki"], francito = data[i]["francis"], peltoncito = data[i]["pelton"], acum = 1
-      }
-    }
+    this.filterFromDate(data[0]["fecha"].substring(0, 4), data);
+    this.initializeData();
     this.spinner.hide();
   }
 
@@ -281,23 +244,62 @@ export class DashboardComponent implements OnInit {
   switchMegaToKilo() {
     this.spinner.show();
     let header = ["francis", "banki", "pelton", "p1", "p2", "p3", "p4", "p5", "p6"];
-    this.barChartData[0].data = [];
-    this.barChartData[1].data = [];
-    this.barChartData[2].data = [];
+    this.cleanData(false);
 
     for (let i = 0; i < this.energi.length; i++) {
       for (let u = 0; u < header.length; u++) {
-        if (this.mega) {
-          this.energi[i][header[u]] = this.energi[i][header[u]] * 1000
+        (this.mega) ? (this.energi[i][header[u]] = (this.energi[i][header[u]] / 1000)) : (this.energi[i][header[u]] = (this.energi[i][header[u]] * 1000))
+      }
+      this.barChartData[0]['data'].push(this.energi[i]["francis"]);
+      this.barChartData[1]['data'].push(this.energi[i]["banki"]);
+      this.barChartData[2]['data'].push(this.energi[i]["pelton"]);
+    }
+    (this.mega) ? this.mega = false : this.mega = true
+
+    this.spinner.hide();
+
+    var buttonParentNode = document.getElementById('customSwitch1');
+    var button_click = function (e) {
+      // this function handle all button click event
+      var btn = e.target; // DOM element which was click. It must be any tag inside buttonParentNode
+      if (btn.tagName == 'INPUT') { // if DOM element is a input tag. 
+        if (btn.innerHTML == 'X') {
+          btn.innerHTML = 'O';
         } else {
-          this.energi[i][header[u]] = this.energi[i][header[u]] / 1000
+          btn.innerHTML = 'X';
         }
       }
-      this.barChartData[0]['data'].push(this.energi[i]["francis"])
-      this.barChartData[1]['data'].push(this.energi[i]["banki"])
-      this.barChartData[2]['data'].push(this.energi[i]["pelton"])
+    };
+
+    buttonParentNode.addEventListener('click', button_click, false);
+
+  }
+
+  initializeData() {
+    this.spinner.show();
+
+    this.mega = true;
+
+    let header = ["francis", "banki", "pelton", "p1", "p2", "p3", "p4", "p5", "p6"];
+
+    this.cleanData(false);
+
+    for (let i = 0; i < this.energi.length; i++) {
+      for (let u = 0; u < header.length; u++) {
+      }
+      this.barChartData[0]['data'].push(this.energi[i]["francis"]);
+      this.barChartData[1]['data'].push(this.energi[i]["banki"]);
+      this.barChartData[2]['data'].push(this.energi[i]["pelton"]);
     }
-    this.mega ? this.mega = false : this.mega
+    (this.mega) ? this.mega = false : this.mega = true
+
     this.spinner.hide();
+  }
+
+  cleanData(bool) {
+    (bool) ? (this.barChartLabels = []) : this.barChartLabels;
+    this.barChartData[0].data = [];
+    this.barChartData[1].data = [];
+    this.barChartData[2].data = [];
   }
 }
