@@ -1,10 +1,12 @@
 <div class="container">
     <!-- Default checked -->
+    <!--
     <div class="custom-control custom-switch">
         <input type="checkbox" class="custom-control-input" (change)="switchMegaToKilo()" id="customSwitch1" checked>
-        <label class="custom-control-label" for="customSwitch1" *ngIf="!mega">MegaWatt</label>
-        <label class="custom-control-label" for="customSwitch1" *ngIf="mega">KiloWatt</label>
+        <label class="custom-control-label" for="customSwitch1" *ngIf="mega">MegaWatt</label>
+        <label class="custom-control-label" for="customSwitch1" *ngIf="!mega">KiloWatt</label>
     </div>
+    -->
     <div style="display: block">
         <canvas baseChart [datasets]="barChartData" [labels]="barChartLabels" [options]="barChartOptions"
             [plugins]="barChartPlugins" [legend]="barChartLegend" [chartType]="barChartType">
@@ -12,12 +14,12 @@
     </div>
     <hr>
     <div>
-        <button mat-button mat-raised-button (click)="dailyData(this.energias)" class="btn btn-primary"
+        <!--<button mat-button mat-raised-button (click)="dailyData(this.energias)" class="btn btn-primary"
             style="margin-right:30px; margin-top: 30px; margin-bottom: 30px;">Diario</button>
         <button mat-button mat-raised-button (click)="monthlyData(this.energias)" class="btn btn-primary"
             style="margin-right:30px; margin-top: 30px; margin-bottom: 30px;">Mensual</button>
         <button mat-button mat-raised-button (click)="annualData(this.energias)" class="btn btn-primary"
-            style="margin-right:30px; margin-top: 30px; margin-bottom: 30px;">Anual</button>
+            style="margin-right:30px; margin-top: 30px; margin-bottom: 30px;">Anual</button>-->
         <button type="submit" class="btn btn-success" (click)="downloadFile()" data-toggle="tooltip"
             data-placement="left" title="Se descargará un archivo .CSV con el contenido de la tabla"
             style="position: absolute; right:30px; margin-top: 30px;">Descargar</button>

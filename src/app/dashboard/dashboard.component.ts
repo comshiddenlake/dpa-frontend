@@ -33,7 +33,7 @@ export class DashboardComponent implements OnInit {
   hoveredDate: NgbDate | null = null;
   fromDate: NgbDate | null;
   toDate: NgbDate | null;
-  mega = true
+  mega = false
   energias
   energi = []
   config = [];
@@ -88,14 +88,36 @@ export class DashboardComponent implements OnInit {
   public barChartLegend = true;
   public barChartPlugins = [pluginDataLabels];
 
-  headers = ["fecha", "francis", "banki", "pelton", "p1", "p2", "p3", "p4", "p5", "p6"]
+  headers = ["fecha", "francisA", "francisB", "banki", "chipre1", "chipre2", "chipre3", "chipre4", "chipre5", "chipre6", "chipre7"]
 
   public barChartData: ChartDataSets[] = [{
-    data: [], label: "Francis"
+    data: [], label: "FrancisA"
   }, {
+    data: [], label: "FrancisB"
+  },
+  {
     data: [], label: "Banki"
-  }, {
-    data: [], label: "Pelton"
+  },
+  {
+    data: [], label: "Chipre1"
+  },
+  {
+    data: [], label: "Chipre2"
+  },
+  {
+    data: [], label: "Chipre3"
+  },
+  {
+    data: [], label: "Chipre4"
+  },
+  {
+    data: [], label: "Chipre5"
+  },
+  {
+    data: [], label: "Chipre6"
+  },
+  {
+    data: [], label: "Chipre7"
   }
   ];
 
@@ -108,11 +130,12 @@ export class DashboardComponent implements OnInit {
   }
 
   public dailyData(data) {
+    console.log(JSON.stringify(data))
     this.spinner.show();
 
     this.energias = data;
 
-    this.mega = true;
+    //this.mega = true;
 
     this.cleanData(false);
     this.energi = []
@@ -120,10 +143,17 @@ export class DashboardComponent implements OnInit {
     this.barChartLabels = [];
     for (let i = 0; i < data.length; i++) {
       this.barChartLabels.push(data[i]["fecha"].substring(0, 10));
-      this.energi.push({ "fecha": data[i]["fecha"].substring(0, 10), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
-      this.barChartData[0]['data'].push(data[i]["francis"])
-      this.barChartData[1]['data'].push(data[i]["banki"])
-      this.barChartData[2]['data'].push(data[i]["pelton"])
+      this.energi.push({ "fecha": data[i]["fecha"].substring(0, 10), "francisA": data[i]["francisA"] / 1000000, "francisB": data[i]["francisB"] / 1000000, "banki": data[i]["banki"] / 1000000, "chipre1": data[i]["chipre1"] / 1000000, "chipre2": data[i]["chipre2"] / 1000000, "chipre3": data[i]["chipre3"] / 1000000, "chipre4": data[i]["chipre4"] / 1000000, "chipre5": data[i]["chipre5"] / 1000000, "chipre6": data[i]["chipre6"] / 1000000, "chipre7": data[i]["chipre7"] / 1000000 })
+      this.barChartData[0]['data'].push(this.energi[i]["francisA"])
+      this.barChartData[1]['data'].push(this.energi[i]["francisB"])
+      this.barChartData[2]['data'].push(this.energi[i]["banki"])
+      this.barChartData[3]['data'].push(this.energi[i]["chipre1"])
+      this.barChartData[4]['data'].push(this.energi[i]["chipre2"])
+      this.barChartData[5]['data'].push(this.energi[i]["chipre3"])
+      this.barChartData[6]['data'].push(this.energi[i]["chipre4"])
+      this.barChartData[7]['data'].push(this.energi[i]["chipre5"])
+      this.barChartData[8]['data'].push(this.energi[i]["chipre6"])
+      this.barChartData[9]['data'].push(this.energi[i]["chipre7"])
     }
 
     this.initializeData();
@@ -132,9 +162,9 @@ export class DashboardComponent implements OnInit {
   }
 
   public monthlyData(data) {
-    this.spinner.show();
+    //this.spinner.show();
 
-    this.mega = true;
+    //this.mega = true;
 
     this.energi = []
 
@@ -144,42 +174,61 @@ export class DashboardComponent implements OnInit {
 
     this.initializeData();
 
-    this.spinner.hide();
+    //this.spinner.hide();
   }
 
   filterFromDate(fecha, data) {
-    let bankito = 0, francito = 0, peltoncito = 0, acum = 0, p1 = 0, p2 = 0, p3 = 0, p4 = 0, p5 = 0, p6 = 0;
-
+    let bankito = 0, francitoA = 0, francitoB = 0, acum = 0, chipre1 = 0, chipre2 = 0, chipre3 = 0, chipre4 = 0, chipre5 = 0, chipre6 = 0, chipre7 = 0;
+    /*
+    ESTE DATA TRAE LA INFO DEL BACK
+    */
+   console.log("Fecha: "+ fecha)
     for (let i = 0; i < data.length; i++) {
+      console.log("data[i][fecha].includes(fecha) " + data[i]["fecha"].includes(fecha))
       if (data[i]["fecha"].includes(fecha)) {
+        francitoA += data[i]["francisA"]
+        francitoB += data[i]["francisB"]
         bankito += data[i]["banki"]
-        francito += data[i]["francis"]
-        peltoncito += data[i]["pelton"]
-        p1 += data[i]["P1"]
-        p2 += data[i]["P2"]
-        p3 += data[i]["P3"]
-        p4 += data[i]["P4"]
-        p5 += data[i]["P5"]
-        p6 += data[i]["P6"]
+        chipre1 += data[i]["chipre1"]
+        chipre2 += data[i]["chipre2"]
+        chipre3 += data[i]["chipre3"]
+        chipre4 += data[i]["chipre4"]
+        chipre5 += data[i]["chipre5"]
+        chipre6 += data[i]["chipre6"]
+        chipre7 += data[i]["chipre7"]
       } else {
-        this.energi.push({ "fecha": data[i]["fecha"].substring(0, fecha.length), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
+        this.energi.push({
+          "fecha": data[i]["fecha"].substring(0, fecha.length),
+          "francisA": data[i]["francisA"], "francisB": data[i]["francisB"],
+          "banki": data[i]["banki"], "chipre1": data[i]["chipre1"],
+          "chipre2": data[i]["chipre2"], "chipre3": data[i]["chipre3"],
+          "chipre4": data[i]["chipre4"], "chipre5": data[i]["chipre5"],
+          "chipre6": data[i]["chipre6"], "chipre7": data[i]["chipre7"]
+        })
         fecha = data[i]["fecha"].substring(0, fecha.length);
 
-        this.barChartData[0]['data'].push(francito);
-        this.barChartData[1]['data'].push(bankito);
-        this.barChartData[2]['data'].push(peltoncito);
-
+        this.barChartData[0]['data'].push(francitoA / 1000000);
+        this.barChartData[1]['data'].push(francitoB / 1000000);
+        this.barChartData[2]['data'].push(bankito / 1000000);
+        this.barChartData[3]['data'].push(chipre1 / 1000000);
+        this.barChartData[4]['data'].push(chipre2 / 1000000);
+        this.barChartData[5]['data'].push(chipre3 / 1000000);
+        this.barChartData[6]['data'].push(chipre4 / 1000000);
+        this.barChartData[7]['data'].push(chipre5 / 1000000);
+        this.barChartData[8]['data'].push(chipre6 / 1000000);
+        this.barChartData[9]['data'].push(chipre7 / 1000000);
+        
         this.barChartLabels.push(fecha);
 
-        bankito = data[i]["banki"], francito = data[i]["francis"], peltoncito = data[i]["pelton"], acum = 1
+        bankito = data[i]["banki"], francitoA = data[i]["francisA"], francitoB = data[i]["francisB"], chipre1 = data[i]["chipre1"], chipre2 = data[i]["chipre2"], chipre3 = data[i]["chipre3"], chipre4 = data[i]["chipre4"], chipre5 = data[i]["chipre5"], chipre6 = data[i]["chipre6"], chipre7 = data[i]["chipre7"], acum = 1
       }
     }
   }
 
   public rangeData(data) {
-    this.spinner.show();
+    //this.spinner.show();
 
-    this.mega = true;
+    //this.mega = true;
 
     this.energi = []
 
@@ -188,28 +237,38 @@ export class DashboardComponent implements OnInit {
     let fechita = data[0]["fecha"].substring(0, 7);
     let toDateFormated = new Date(this.toDate.year + "-" + this.toDate.month + "-" + this.toDate.day)
     let fromDateFormated = new Date(this.fromDate.year + "-" + this.fromDate.month + "-" + this.fromDate.day)
-
     for (let i = 0; i < data.length; i++) {
       if (fromDateFormated <= new Date(data[i]["fecha"]) && toDateFormated >= new Date(data[i]["fecha"])) {
         this.barChartLabels.push(data[i]["fecha"].substring(0, 10));
-        this.energi.push({ "fecha": data[i]["fecha"].substring(0, 10), "francis": data[i]["francis"], "banki": data[i]["banki"], "pelton": data[i]["pelton"], "p1": data[i]["p1"], "p2": data[i]["p2"], "p3": data[i]["p3"], "p4": data[i]["p4"], "p5": data[i]["p5"], "p6": data[i]["p6"] })
-        this.barChartData[0]['data'].push(data[i]["francis"])
-        this.barChartData[1]['data'].push(data[i]["banki"])
-        this.barChartData[2]['data'].push(data[i]["pelton"])
-
+        this.energi.push({
+          "fecha": data[i]["fecha"].substring(0, 10), "francisA": data[i]["francisA"] / 1000000,
+          "francisB": data[i]["francisB"] / 1000000, "banki": data[i]["banki"] / 1000000, "chipre1": data[i]["chipre1"] / 1000000,
+          "chipre2": data[i]["chipre2"] / 1000000, "chipre3": data[i]["chipre3"] / 1000000, "chipre4": data[i]["chipre4"] / 1000000,
+          "chipre5": data[i]["chipre5"] / 1000000, "chipre6": data[i]["chipre6"] / 1000000, "chipre7": data[i]["chipre7"] / 1000000
+        })
+        this.barChartData[0]['data'].push(data[i]["francisA"] / 1000000)
+        this.barChartData[1]['data'].push(data[i]["francisB"] / 1000000)
+        this.barChartData[2]['data'].push(data[i]["banki"] / 1000000)
+        this.barChartData[3]['data'].push(data[i]["chipre1"] / 1000000)
+        this.barChartData[4]['data'].push(data[i]["chipre2"] / 1000000)
+        this.barChartData[5]['data'].push(data[i]["chipre3"] / 1000000)
+        this.barChartData[6]['data'].push(data[i]["chipre4"] / 1000000)
+        this.barChartData[7]['data'].push(data[i]["chipre5"] / 1000000)
+        this.barChartData[8]['data'].push(data[i]["chipre6"] / 1000000)
+        this.barChartData[9]['data'].push(data[i]["chipre7"] / 1000000)
       }
     }
     this.barChartLabels.push(fechita);
 
     this.initializeData();
 
-    this.spinner.hide();
+    //this.spinner.hide();
   }
 
   public annualData(data) {
     this.spinner.show();
 
-    this.mega = true;
+    //this.mega = true;
 
     this.energi = []
 
@@ -241,18 +300,25 @@ export class DashboardComponent implements OnInit {
     a.remove();
   }
 
-  switchMegaToKilo() {
+  /*switchMegaToKilo() {
     this.spinner.show();
-    let header = ["francis", "banki", "pelton", "p1", "p2", "p3", "p4", "p5", "p6"];
+    let header = ["francisA", "francisB", "banki", "chipre1", "chipre2", "chipre3", "chipre4", "chipre5", "chipre6", "chipre7"];
     this.cleanData(false);
-
+    console.log("hits.mega" + this.mega)
     for (let i = 0; i < this.energi.length; i++) {
       for (let u = 0; u < header.length; u++) {
-        (this.mega) ? (this.energi[i][header[u]] = (this.energi[i][header[u]] / 1000)) : (this.energi[i][header[u]] = (this.energi[i][header[u]] * 1000))
+        (this.mega) ? (this.energi[i][header[u]] = (this.energi[i][header[u]] * 1000)) : (this.energi[i][header[u]] = (this.energi[i][header[u]] / 1000000))
       }
-      this.barChartData[0]['data'].push(this.energi[i]["francis"]);
-      this.barChartData[1]['data'].push(this.energi[i]["banki"]);
-      this.barChartData[2]['data'].push(this.energi[i]["pelton"]);
+      this.barChartData[0]['data'].push(this.energi[i]["francisA"]/1000000)
+      this.barChartData[1]['data'].push(this.energi[i]["francisB"]/1000000)
+      this.barChartData[2]['data'].push(this.energi[i]["banki"]/1000000)
+      this.barChartData[3]['data'].push(this.energi[i]["chipre1"]/1000000)
+      this.barChartData[4]['data'].push(this.energi[i]["chipre2"]/1000000)
+      this.barChartData[5]['data'].push(this.energi[i]["chipre3"]/1000000)
+      this.barChartData[6]['data'].push(this.energi[i]["chipre4"]/1000000)
+      this.barChartData[7]['data'].push(this.energi[i]["chipre5"]/1000000)
+      this.barChartData[8]['data'].push(this.energi[i]["chipre6"]/1000000)
+      this.barChartData[9]['data'].push(this.energi[i]["chipre7"]/1000000)
     }
     (this.mega) ? this.mega = false : this.mega = true
 
@@ -274,24 +340,31 @@ export class DashboardComponent implements OnInit {
     buttonParentNode.addEventListener('click', button_click, false);
 
   }
-
+*/
   initializeData() {
-    this.spinner.show();
+    //this.spinner.show();
 
-    this.mega = true;
+    //this.mega = true;
 
-    let header = ["francis", "banki", "pelton", "p1", "p2", "p3", "p4", "p5", "p6"];
+    let header = ["francisA", "francisB", "banki", "chipre1", "chipre2", "chipre3", "chipre4", "chipre5", "chipre6", "chipre7"];
 
     this.cleanData(false);
 
     for (let i = 0; i < this.energi.length; i++) {
       for (let u = 0; u < header.length; u++) {
       }
-      this.barChartData[0]['data'].push(this.energi[i]["francis"]);
-      this.barChartData[1]['data'].push(this.energi[i]["banki"]);
-      this.barChartData[2]['data'].push(this.energi[i]["pelton"]);
+      this.barChartData[0]['data'].push(this.energi[i]["francisA"])
+      this.barChartData[1]['data'].push(this.energi[i]["francisB"])
+      this.barChartData[2]['data'].push(this.energi[i]["banki"])
+      this.barChartData[3]['data'].push(this.energi[i]["chipre1"])
+      this.barChartData[4]['data'].push(this.energi[i]["chipre2"])
+      this.barChartData[5]['data'].push(this.energi[i]["chipre3"])
+      this.barChartData[6]['data'].push(this.energi[i]["chipre4"])
+      this.barChartData[7]['data'].push(this.energi[i]["chipre5"])
+      this.barChartData[8]['data'].push(this.energi[i]["chipre6"])
+      this.barChartData[9]['data'].push(this.energi[i]["chipre7"])
     }
-    (this.mega) ? this.mega = false : this.mega = true
+    //(this.mega) ? this.mega = false : this.mega = true
 
     this.spinner.hide();
   }
@@ -301,5 +374,12 @@ export class DashboardComponent implements OnInit {
     this.barChartData[0].data = [];
     this.barChartData[1].data = [];
     this.barChartData[2].data = [];
+    this.barChartData[3].data = [];
+    this.barChartData[4].data = [];
+    this.barChartData[5].data = [];
+    this.barChartData[6].data = [];
+    this.barChartData[7].data = [];
+    this.barChartData[8].data = [];
+    this.barChartData[9].data = [];
   }
 }
