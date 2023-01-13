@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 
-var API_URL = "http://localhost:3000"
+var API_URL = "http://api.lago-escondido.com"
 
 @Injectable({
   providedIn: 'root'
